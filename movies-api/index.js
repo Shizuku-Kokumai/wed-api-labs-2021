@@ -6,7 +6,8 @@ import './seedData';
 import usersRouter from './api/users';
 import genreRouter from './api/genres';
 import session from 'express-session';
-import authenticate from './authenticate';
+//import authenticate from './authenticate';
+import passport from './authenticate';
 
 dotenv.config();
 
@@ -21,13 +22,14 @@ const errHandler = (err, req, res, next) => {
     }
     res.status(500).send(`Hey!! You caught the error 👍👍. Here's the details: ${err.stack} `);
 };
-app.use(session({
-    secret: 'ilikecake',
-    resave: true,
-    saveUninitialized: true
-}));
+// app.use(session({
+//     secret: 'ilikecake',
+//     resave: true,
+//     saveUninitialized: true
+// }));
+app.use(passport.initialize());
 app.use(express.json());
-app.use('/api/movies', authenticate, moviesRouter);
+app.use('/api/movies', passport.authenticate('jwt', { session: false }), moviesRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/genres', genreRouter);
 app.use(errHandler);
